@@ -1,0 +1,6 @@
+name: fred
+model: claude-sonnet
+tool_groups:
+  - web
+  - files
+  - bash

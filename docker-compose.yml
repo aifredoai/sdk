@@ -1,0 +1,64 @@
+version: "3.9"
+
+# Fred SDK — docker compose up -d --build
+# First build: 5-10 minutes. Subsequent starts: ~30 seconds.
+# Requirements: 4GB RAM, 2 CPU cores, 20GB disk, Docker 24+
+
+services:
+
+  # ── Fred Agent Runtime (LangGraph) ────────────────────────────────────
+  fred:
+    build:
+      context: ./deerflow
+      dockerfile: backend/Dockerfile
+    container_name: fred-agent
+    command: sh -c "cd backend && uv run langgraph dev --no-browser --allow-blocking --host 0.0.0.0 --port 2024"
+    volumes:
+      - ./config/fred-soul.md:/app/backend/.deer-flow/agents/fred/SOUL.md:ro
+      - ./config/fred-config.yaml:/app/backend/.deer-flow/agents/fred/config.yaml:ro
+      - ./config/extensions.json:/app/backend/.deer-flow/extensions_config.json:ro
+      - ./config/langgraph.json:/app/backend/langgraph.json:ro
+      - ./data/logs:/app/logs
+      - ./data/db:/app/data
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY:-}
+    restart: unless-stopped
+    networks:
+      - fred-net
+
+  # ── Google Workspace MCP (Gmail, Calendar, Drive) ─────────────────────
+  workspace:
+    build:
+      context: ./google_workspace_mcp
+    container_name: fred-workspace
+    command: uv run main.py --transport streamable-http --tools gmail calendar drive
+    volumes:
+      - ./data/credentials:/app/store_creds
+    environment:
+      - GOOGLE_OAUTH_CLIENT_ID=${GOOGLE_OAUTH_CLIENT_ID:-}
+      - GOOGLE_OAUTH_CLIENT_SECRET=${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      - GOOGLE_MCP_CREDENTIALS_DIR=/app/store_creds
+      - TRANSPORT=streamable-http
+      - PORT=8000
+    restart: unless-stopped
+    networks:
+      - fred-net
+
+  # ── Caddy (SSL + reverse proxy) ───────────────────────────────────────
+  caddy:
+    image: caddy:2-alpine
+    container_name: fred-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy:/data
+    restart: unless-stopped
+    networks:
+      - fred-net
+
+networks:
+  fred-net:
+    driver: bridge

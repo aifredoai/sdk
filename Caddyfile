@@ -1,0 +1,12 @@
+{$FRED_DOMAIN} {
+    # Fred chat UI and API
+    reverse_proxy /api/* fred-agent:2024
+    reverse_proxy /runs/* fred-agent:2024
+    reverse_proxy /threads/* fred-agent:2024
+    reverse_proxy /assistants/* fred-agent:2024
+
+    # Google Workspace OAuth callback
+    reverse_proxy /oauth2callback fred-workspace:8000
+    reverse_proxy /auth/* fred-workspace:8000
+    reverse_proxy /mcp/* fred-workspace:8000
+}

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "google-workspace": {
+      "type": "streamable_http",
+      "url": "http://fred-workspace:8000/mcp",
+      "enabled": true
+    }
+  }
+}
