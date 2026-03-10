@@ -12,9 +12,10 @@ services:
       context: ./deerflow
       dockerfile: backend/Dockerfile
     container_name: fred-agent
+    entrypoint: ["/app/boot.sh"]
     command: sh -c "cd backend && uv run langgraph dev --no-browser --allow-blocking --host 0.0.0.0 --port 2024"
     volumes:
-      - ./config/fred-soul.md:/app/backend/.deer-flow/agents/fred/SOUL.md:ro
+      - ./boot.sh:/app/boot.sh:ro
       - ./config/fred-config.yaml:/app/backend/.deer-flow/agents/fred/config.yaml:ro
       - ./config/extensions.json:/app/backend/.deer-flow/extensions_config.json:ro
       - ./config/langgraph.json:/app/backend/langgraph.json:ro
@@ -23,6 +24,8 @@ services:
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - TAVILY_API_KEY=${TAVILY_API_KEY:-}
+      - FRED_LICENSE_KEY=${FRED_LICENSE_KEY:-}
+      - AIFREDO_API=${AIFREDO_API:-https://aifredo.chat}
     restart: unless-stopped
     networks:
       - fred-net
