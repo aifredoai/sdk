@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AiFredo SDK — Getting Started</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f0eff5;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e2e0eb;
+      --purple: #5b4fcf;
+      --code-bg: #1a1a2e;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.6; }
+    header { background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: center; height: 56px; position: sticky; top: 0; z-index: 100; }
+    nav { display: flex; align-items: center; gap: 28px; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.15s; }
+    nav a:hover, nav a.active { color: var(--text); }
+    .page { display: flex; max-width: 1080px; margin: 0 auto; padding: 48px 40px; gap: 56px; }
+    aside { width: 190px; flex-shrink: 0; position: sticky; top: 72px; align-self: flex-start; }
+    .sidebar-section { margin-bottom: 20px; }
+    .sidebar-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .sidebar-link { display: block; font-size: 13px; color: var(--muted); text-decoration: none; padding: 4px 0 4px 10px; margin-left: -10px; border-left: 2px solid transparent; transition: color 0.15s; }
+    .sidebar-link:hover { color: var(--text); }
+    .sidebar-link.active { color: var(--purple); border-left-color: var(--purple); }
+    main { flex: 1; min-width: 0; }
+    h1 { font-size: 30px; font-weight: 700; margin-bottom: 10px; line-height: 1.2; }
+    h2 { font-size: 19px; font-weight: 600; margin: 48px 0 14px; padding-top: 48px; border-top: 1px solid var(--border); }
+    h2:first-of-type { border-top: none; margin-top: 28px; padding-top: 0; }
+    h3 { font-size: 14px; font-weight: 600; margin: 22px 0 8px; }
+    p { color: var(--muted); margin-bottom: 14px; font-size: 15px; }
+    a { color: var(--purple); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    pre { background: var(--code-bg); border-radius: 10px; padding: 16px 18px; overflow-x: auto; margin: 10px 0 18px; position: relative; }
+    pre code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.7; color: #cbd5e1; }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; background: rgba(91,79,207,0.08); border: 1px solid rgba(91,79,207,0.15); border-radius: 4px; padding: 2px 6px; color: var(--purple); }
+    pre code { background: none; border: none; padding: 0; color: #cbd5e1; }
+    .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; padding: 3px 9px; font-size: 11px; color: #94a3b8; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .copy-btn:hover { color: #fff; }
+    .copy-btn.ok { color: #4ade80; }
+    .steps { margin: 18px 0; }
+    .step { display: flex; gap: 14px; padding-bottom: 26px; position: relative; }
+    .step::after { content: ''; position: absolute; left: 12px; top: 26px; bottom: 0; width: 1px; background: var(--border); }
+    .step:last-child::after { display: none; }
+    .step:last-child { padding-bottom: 0; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--text); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; z-index: 1; }
+    .step-body { flex: 1; padding-top: 2px; }
+    .step-body h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 22px; font-size: 14px; }
+    th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); border-bottom: 2px solid var(--border); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+    td:first-child { color: var(--text); font-family: 'SF Mono', monospace; font-size: 13px; }
+    tr:last-child td { border-bottom: none; }
+    .callout { border-radius: 8px; padding: 12px 16px; margin: 14px 0; font-size: 14px; }
+    .callout.info { background: rgba(91,79,207,0.07); border: 1px solid rgba(91,79,207,0.18); color: var(--purple); }
+    .callout.tip  { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); color: #16a34a; }
+    .callout.warn { background: rgba(249,115,22,0.07); border: 1px solid rgba(249,115,22,0.2); color: #c2410c; }
+    .hero { padding-bottom: 36px; border-bottom: 1px solid var(--border); }
+    .hero p { font-size: 16px; color: var(--muted); max-width: 500px; }
+    .tag { display: inline-block; background: rgba(91,79,207,0.1); color: var(--purple); border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 500; margin-bottom: 14px; }
+    .k { color: #a78bfa; } .s { color: #86efac; } .c { color: #475569; font-style: italic; } .n { color: #93c5fd; }
+    footer { max-width: 1080px; margin: 56px auto 0; padding: 20px 40px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; }
+    @media (max-width: 768px) { aside { display: none; } .page { padding: 24px 20px; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="demo.html">How it works</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="api.html">API</a>
+    <a href="configuration.html">Config</a>
+    <a href="get-sdk.html" class="active">Download SDK</a>
+    <a href="mobile.html">Mobile</a>
+    <a href="https://github.com/aifredoai/sdk">GitHub</a>
+  </nav>
+</header>
+
+<div class="page">
+  <aside>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Getting Started</div>
+      <a href="#overview" class="sidebar-link active">Overview</a>
+      <a href="#prerequisites" class="sidebar-link">Prerequisites</a>
+      <a href="#quickstart" class="sidebar-link">Quickstart</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Configuration</div>
+      <a href="#env" class="sidebar-link">Environment vars</a>
+      <a href="#license" class="sidebar-link">License key</a>
+      <a href="#fred-config" class="sidebar-link">Fred config</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Services</div>
+      <a href="#services" class="sidebar-link">Docker services</a>
+      <a href="#caddy" class="sidebar-link">Caddy & SSL</a>
+      <a href="#google" class="sidebar-link">Google Workspace</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Reference</div>
+      <a href="#api" class="sidebar-link">Control plane API</a>
+      <a href="#heartbeat" class="sidebar-link">Heartbeat</a>
+    </div>
+  </aside>
+
+  <main>
+    <section class="hero" id="overview">
+      <div class="tag">Self-hosted · Business SDK</div>
+      <h1>Getting Started</h1>
+      <p>Deploy Fred — your AI business development agent — on your own infrastructure. One Docker Compose command. Your data never leaves your server.</p>
+    </section>
+
+    <h2 id="prerequisites">Prerequisites</h2>
+    <table>
+      <tr><th>Requirement</th><th>Notes</th></tr>
+      <tr><td>Docker + Compose</td><td>Docker Engine 24+ and Docker Compose v2</td></tr>
+      <tr><td>VPS or server</td><td>Min 2 vCPU, 4GB RAM. Hetzner CX21 or equivalent.</td></tr>
+      <tr><td>Domain name</td><td>A domain you control with DNS access</td></tr>
+      <tr><td>License key</td><td>Issued after checkout at <a href="https://aifredo.chat/fred-setup">aifredo.chat/fred-setup</a></td></tr>
+      <tr><td>Google OAuth credentials</td><td>Optional — for Gmail / Calendar integration</td></tr>
+    </table>
+
+    <h2 id="quickstart">Quickstart</h2>
+    <p>Get Fred running in under 5 minutes.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body">
+        <h3>Clone the SDK repo</h3>
+        <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code>git clone https://github.com/aifredoai/sdk.git aifredo-sdk
+cd aifredo-sdk</code></pre>
+      </div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body">
+        <h3>Configure your environment</h3>
+        <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code>cp .env.example .env
+nano .env</code></pre>
+        <p>At minimum you need:</p>
+        <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code><span class="n">AIFREDO_LICENSE_KEY</span>=<span class="s">your-license-key-here</span>
+<span class="n">ANTHROPIC_API_KEY</span>=<span class="s">sk-ant-...</span>
+<span class="n">DOMAIN</span>=<span class="s">fred.yourdomain.com</span></code></pre>
+      </div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <h3>Point your DNS</h3>
+        <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code>fred.yourdomain.com  →  A  →  YOUR_SERVER_IP</code></pre>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body">
+        <h3>Start the stack</h3>
+        <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code>docker compose up -d</code></pre>
+        <div class="callout tip">✓ Caddy provisions a free SSL certificate via Let's Encrypt. Allow 60 seconds on first boot.</div>
+      </div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body">
+        <h3>Verify Fred is running</h3>
+        <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code>curl https://fred.yourdomain.com/health</code></pre>
+        <p>You should see <code>{"status":"ok"}</code>. Charged is live.</p>
+      </div></div>
+    </div>
+
+    <h2 id="env">Environment Variables</h2>
+    <table>
+      <tr><th>Variable</th><th>Required</th><th>Description</th></tr>
+      <tr><td>AIFREDO_LICENSE_KEY</td><td>Yes</td><td>Your SDK license key from the setup wizard</td></tr>
+      <tr><td>ANTHROPIC_API_KEY</td><td>Yes</td><td>Your Anthropic API key — powers Fred</td></tr>
+      <tr><td>DOMAIN</td><td>Yes</td><td>Your domain (e.g. fred.yourdomain.com)</td></tr>
+      <tr><td>GOOGLE_CLIENT_ID</td><td>Optional</td><td>For Gmail & Calendar integration</td></tr>
+      <tr><td>GOOGLE_CLIENT_SECRET</td><td>Optional</td><td>For Gmail & Calendar integration</td></tr>
+    </table>
+
+    <h2 id="license">License Key</h2>
+    <p>Issued after the setup wizard at <a href="https://aifredo.chat/fred-setup">aifredo.chat/fred-setup</a>. Links your deployment to the AiFredo control plane for heartbeat monitoring, config sync, and billing.</p>
+    <div class="callout warn">⚠ Keep your license key secret. Do not commit your <code>.env</code> to version control.</div>
+
+    <h2 id="fred-config">Fred Config</h2>
+    <h3>SOUL.md</h3>
+    <p>Defines Fred's personality and rules. Edit to match your brand voice.</p>
+    <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code><span class="c"># config/fred/SOUL.md</span>
+You are Fred, working for [Your Company].
+Your goal is to [your sales objective].
+Target market: [your ideal customer]
+Tone: professional / casual / direct</code></pre>
+    <h3>config.yaml</h3>
+    <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code><span class="n">name</span>: fred
+<span class="n">model</span>: claude-sonnet
+<span class="n">tool_groups</span>:
+  - web
+  - files
+  - bash</code></pre>
+
+    <h2 id="services">Docker Services</h2>
+    <table>
+      <tr><th>Service</th><th>Port</th><th>Description</th></tr>
+      <tr><td>caddy</td><td>80, 443</td><td>Reverse proxy + automatic SSL</td></tr>
+      <tr><td>langgraph</td><td>2024</td><td>Fred's AI engine (DeerFlow + Claude)</td></tr>
+      <tr><td>gateway</td><td>8001</td><td>API gateway for tool routing</td></tr>
+      <tr><td>workspace-mcp</td><td>8000</td><td>Google Workspace MCP server</td></tr>
+    </table>
+    <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code><span class="c"># View services</span>
+docker compose ps
+
+<span class="c"># Stream Fred logs</span>
+docker compose logs langgraph -f
+
+<span class="c"># Restart Fred</span>
+docker compose restart langgraph</code></pre>
+
+    <h2 id="caddy">Caddy & SSL</h2>
+    <p>Caddy handles SSL automatically via Let's Encrypt. Set <code>DOMAIN</code> in your <code>.env</code> and ensure DNS is pointing to your server before starting the stack.</p>
+    <div class="callout tip">✓ SSL renews automatically. No certbot, no cron jobs, no nginx config.</div>
+
+    <h2 id="google">Google Workspace Integration</h2>
+    <p>Fred can send emails, read your calendar, and access Google Docs via the included MCP server.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body">
+        <h3>Create a Google Cloud project</h3>
+        <p>Go to <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a> → New Project</p>
+      </div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body">
+        <h3>Enable APIs</h3>
+        <p>Enable: Gmail API, Google Calendar API, Google Drive API</p>
+      </div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">
+        <h3>Create OAuth credentials</h3>
+        <p>APIs & Services → Credentials → OAuth 2.0 Client ID. Redirect URI: <code>https://fred.yourdomain.com/oauth/callback</code></p>
+      </div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body">
+        <h3>Add to .env</h3>
+        <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code><span class="n">GOOGLE_CLIENT_ID</span>=<span class="s">your-client-id.apps.googleusercontent.com</span>
+<span class="n">GOOGLE_CLIENT_SECRET</span>=<span class="s">your-client-secret</span></code></pre>
+      </div></div>
+    </div>
+
+    <h2 id="api">Control Plane API</h2>
+    <p>Your SDK communicates with <code>aifredo.chat</code> automatically. No manual integration needed.</p>
+    <table>
+      <tr><th>Endpoint</th><th>Method</th><th>Description</th></tr>
+      <tr><td>/api/sdk/config/:key</td><td>GET</td><td>Fetch latest Fred configuration</td></tr>
+      <tr><td>/api/sdk/heartbeat</td><td>POST</td><td>Report uptime every 6 hours</td></tr>
+      <tr><td>/api/sdk/onboard</td><td>POST</td><td>Register new deployment</td></tr>
+      <tr><td>/api/sdk/onboard/status</td><td>GET</td><td>Check onboarding status</td></tr>
+    </table>
+
+    <h2 id="heartbeat">Heartbeat</h2>
+    <p>The SDK pings <code>aifredo.chat</code> every 6 hours to confirm your deployment is healthy. Powers the status indicator in your dashboard.</p>
+    <pre><button class="copy-btn" onclick="cp(this)">Copy</button><code><span class="c"># Check heartbeat logs</span>
+docker compose logs gateway | grep heartbeat</code></pre>
+    <div class="callout info">If heartbeats stop for 24+ hours, you'll receive an email alert at your registered address.</div>
+  </main>
+</div>
+
+<footer>
+  <span>AiFredo SDK · <a href="https://aifredo.chat">aifredo.chat</a></span>
+  <span><a href="mailto:mo@pipelabs.xyz">mo@pipelabs.xyz</a> · <a href="https://github.com/aifredoai/sdk">GitHub</a></span>
+</footer>
+
+<script>
+  function cp(btn) {
+    const text = btn.nextElementSibling.innerText;
+    navigator.clipboard.writeText(text);
+    btn.textContent = 'Copied!';
+    btn.classList.add('ok');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 2000);
+  }
+  const links = document.querySelectorAll('.sidebar-link');
+  window.addEventListener('scroll', function() {
+    var cur = '';
+    document.querySelectorAll('[id]').forEach(function(el) { if (window.scrollY >= el.offsetTop - 120) cur = el.id; });
+    links.forEach(function(a) { a.classList.toggle('active', a.getAttribute('href') === '#' + cur); });
+  });
+</script>
+</body>
+</html>
